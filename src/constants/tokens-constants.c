@@ -8,4 +8,7 @@ const char * TT_MUL = "MUL";
 const char * TT_DIV = "DIV";
 const char * TT_LPAREN = "LPAREN";
 const char * TT_RPAREN = "RPAREN";
-const char * TT_DIGITS = "0123456789";
+const char * TT_EQUAL = "=";
+const char * TT_KEYWORD = "KEYWORD";
+const char * TT_IDENTIFIER = "IDENTIFIER";
+const char * TT_COLON = "TT_COLON";

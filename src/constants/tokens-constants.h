@@ -9,6 +9,10 @@ extern const char * TT_MUL;
 extern const char * TT_DIV;
 extern const char * TT_LPAREN;
 extern const char * TT_RPAREN;
-extern const char * TT_DIGITS;
+extern const char * TT_EQUAL;
+extern const char * TT_KEYWORD;
+extern const char * TT_IDENTIFIER;
+extern const char * TT_IDENTIFIER;
+extern const char * TT_COLON;
 
 #endif
