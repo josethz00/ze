@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../../constants/tokens-constants.h"
+#include "../../constants/lexer-constants.h"
+#include "../../constants/keywords-constants.h"
 
 typedef struct {
     char * list;
@@ -15,6 +17,16 @@ typedef struct {
 void initCharList(CharList *l);
 void appendCharList(CharList *l, char element);
 void appendStringCharList(CharList *l, char elements[], int arr_length);
+
+typedef struct {
+    char ** list;
+    size_t used;
+    size_t size;
+} StringList;
+
+void initStringList(StringList *l);
+void appendStringList(StringList *l, char element[]);
+void freeStringList(StringList *l);
 
 typedef struct {
     int index;

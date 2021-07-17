@@ -25,6 +25,27 @@ void appendStringCharList(CharList *l, char elements[], int arr_length) {
     }
 }
 
+void initStringList(StringList *l) {
+    size_t initialSize = 10;
+    l->list = malloc(initialSize * sizeof(char *));
+    l->used = 0;
+    l->size = initialSize;
+}
+
+void appendStringList(StringList *l, char element[]) {
+    if (l->used == l->size) {
+        l->size += 1;
+        l->list = realloc(l->list, l->size * sizeof(char *));
+    }
+    l->list[l->used++] = element;
+}
+
+void freeStringList(StringList *l) {
+    free(l->list);
+    l->list = NULL;
+    l->used = l->size = 0;
+}
+
 void createPosition(Position *position, int index, int ln, int col, char filename[], char fileText[], int fileTextLength) {
     position->index = index;
     position->ln = ln;
@@ -92,17 +113,17 @@ char * reprToken(Token token) {
     const int totalStructSize = typeFieldSize + valueFieldSize;
     char * returnValue = (char*)malloc(totalStructSize * sizeof(char));
     if (strlen(token.value) == 0) {
-        sprintf(returnValue, "%s:%s", token.type, token.value);
+        sprintf(returnValue, "%s, %s", token.type, token.value);
         return returnValue;
     }
-    sprintf(returnValue, "%s:%s", token.type, token.value);
+    sprintf(returnValue, "%s, %s", token.type, token.value);
     return returnValue;
 }
 
 void printTokensList(TokensList *l, size_t tokensListLen) {
     size_t listIndex;
     for (listIndex = 0; listIndex < tokensListLen; listIndex++) {
-        printf("[ %s ]", reprToken(l->list[listIndex]));
+        printf("[ %s ] ", reprToken(l->list[listIndex]));
     }
     printf("\n");
 }
@@ -123,12 +144,12 @@ void createLexer(struct Lexer * lexer, char text[], int arrLength, char filename
 Token makeNumberLexer(struct Lexer *lexer) {
     CharList numberString;
     unsigned int dotCount = 0;
-    size_t ttDigitsLen = strlen(TT_DIGITS);
+    size_t ttDigitsLen = strlen(DIGITS);
     Token numericToken;
 
-    char * TT_DIGITS_WITH_DOT = malloc(ttDigitsLen + 1 + 1);
+    char * TT_DIGITS_WITH_DOT = malloc((ttDigitsLen + 1 + 1) * sizeof(char));
 
-    strcpy(TT_DIGITS_WITH_DOT, TT_DIGITS);
+    strcpy(TT_DIGITS_WITH_DOT, DIGITS);
     TT_DIGITS_WITH_DOT[ttDigitsLen] = '.';
     TT_DIGITS_WITH_DOT[ttDigitsLen + 1] = '\0';
 
@@ -156,6 +177,39 @@ Token makeNumberLexer(struct Lexer *lexer) {
     return numericToken;
 }
 
+Token makeIdentifierLexer(struct Lexer *lexer) {
+    CharList identifierString;
+    size_t ttLettersLen = strlen(LETTERS);
+    size_t ttDigitsLen = strlen(DIGITS);
+    Token numericToken;
+
+    char * IDENTIFIER_CHARACTERS = (char *)malloc((ttDigitsLen + ttLettersLen + 1 + 1) * sizeof(char));
+
+    sprintf(IDENTIFIER_CHARACTERS, "%s%s%c%c", LETTERS, DIGITS, '_', '\0');
+
+    initCharList(&identifierString);
+
+    while (
+        lexer->currentChar != '\0' 
+        && 
+        strchr(IDENTIFIER_CHARACTERS, lexer->currentChar) != NULL
+    ) {
+        appendCharList(&identifierString, lexer->currentChar);
+        advanceLexer(lexer);
+    }
+
+    char tokenType[20];
+    
+    if (isKeyword(identifierString.list)) {
+        strcpy(tokenType, TT_KEYWORD);
+    } else {
+        strcpy(tokenType, TT_IDENTIFIER);
+    }
+
+    createToken(&numericToken, tokenType, identifierString.list);
+    return numericToken;
+}
+
 tuple makeTokensLexer(struct Lexer * lexer) {
     TokensList tokens;
     initTokensList(&tokens);
@@ -166,8 +220,14 @@ tuple makeTokensLexer(struct Lexer * lexer) {
     while (lexer->currentChar != '\0') {
         if (lexer->currentChar == ' ' || lexer->currentChar == '\t') {
             advanceLexer(lexer);
-        } else if (strchr(TT_DIGITS, lexer->currentChar) != NULL) {
+        } else if (strchr(DIGITS, lexer->currentChar) != NULL) {
             appendTokensList(&tokens, makeNumberLexer(lexer));
+        } else if (strchr(LETTERS, lexer->currentChar) != NULL) {
+		    appendTokensList(&tokens, makeIdentifierLexer(lexer));
+        } else if(lexer->currentChar == '=') {
+            createToken(&lToken, TT_EQUAL, "=");
+            appendTokensList(&tokens, lToken);
+            advanceLexer(lexer);
         } else if (lexer->currentChar == '+') {
             createToken(&lToken, TT_PLUS, "+");
             appendTokensList(&tokens, lToken);
@@ -190,6 +250,10 @@ tuple makeTokensLexer(struct Lexer * lexer) {
             advanceLexer(lexer);
         } else if (lexer->currentChar == ')') {
             createToken(&lToken, TT_RPAREN, ")");
+            appendTokensList(&tokens, lToken);
+            advanceLexer(lexer);
+        } else if (lexer->currentChar == ':') {
+            createToken(&lToken, TT_COLON, ":");
             appendTokensList(&tokens, lToken);
             advanceLexer(lexer);
         } else {
