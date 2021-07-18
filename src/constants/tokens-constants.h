@@ -14,5 +14,6 @@ extern const char * TT_KEYWORD;
 extern const char * TT_IDENTIFIER;
 extern const char * TT_IDENTIFIER;
 extern const char * TT_COLON;
+extern const char * TT_RIGHT;
 
 #endif
