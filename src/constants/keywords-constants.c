@@ -9,11 +9,12 @@ const char * KW_UNDEFINED = "undefined";
 
 int isKeyword(char * value) {
 
+  // if strcmp returns a falsy value the strings are equal
   while (
-    strcmp(value, KW_NUMBER) ||
-    strcmp(value, KW_BOOLEAN) ||
-    strcmp(value, KW_STRING) ||
-    strcmp(value, KW_UNDEFINED)
+    !strcmp(value, KW_NUMBER) ||
+    !strcmp(value, KW_BOOLEAN) ||
+    !strcmp(value, KW_STRING) ||
+    !strcmp(value, KW_UNDEFINED)
   ) {
     return 1;
   }
