@@ -256,13 +256,17 @@ tuple makeTokensLexer(struct Lexer * lexer) {
             createToken(&lToken, TT_COLON, ":");
             appendTokensList(&tokens, lToken);
             advanceLexer(lexer);
+        } else if(lexer->currentChar == '>') {
+            createToken(&lToken, TT_RIGHT, ">");
+            appendTokensList(&tokens, lToken);
+            advanceLexer(lexer);
         } else {
             Position positionStart = copyPosition(&lexer->position);
             const char errorMsg[] = "Error <Illegal Character>" ;
             size_t errorMsgLen = sizeof(errorMsg) / sizeof(* errorMsg);
             char * stringError = (char *)malloc(errorMsgLen * sizeof(char) + 1 + 1);
 
-            sprintf(stringError, "%s <%c>", errorMsg, lexer->currentChar);
+            sprintf(stringError, "%s %c", errorMsg, lexer->currentChar);
             createError(&lexError, positionStart, positionStart, stringError, "No details for this error");
             strcpy(lexTokensReturn.b.strval, reprAsStringError(lexError));
 
