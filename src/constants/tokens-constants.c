@@ -13,3 +13,4 @@ const char * TT_KEYWORD = "KEYWORD";
 const char * TT_IDENTIFIER = "IDENTIFIER";
 const char * TT_COLON = "TT_COLON";
 const char * TT_RIGHT = "TT_RIGHT";
+const char * TT_COMA = "TT_COMA";

@@ -15,5 +15,6 @@ extern const char * TT_IDENTIFIER;
 extern const char * TT_IDENTIFIER;
 extern const char * TT_COLON;
 extern const char * TT_RIGHT;
+extern const char * TT_COMA;
 
 #endif

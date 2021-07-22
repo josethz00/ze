@@ -2,32 +2,35 @@
 
 void initCharList(CharList *l) {
     size_t initialSize = 10;
-    l->list = (char*)malloc((10+1) * sizeof(char)); 
+    l->list = (char*)malloc((initialSize+1) * sizeof(char)); 
     l->used = 0;
     l->size = initialSize;
 }
 
 void appendCharList(CharList *l, char element) {
     if (l->used == l->size) {
-        l->size += 1;
-        l->list = realloc(l->list, l->size * sizeof(char *));
+        l->size += 2;
+        l->list = realloc(l->list, l->size);
     }
     l->list[l->used++] = element;
+    l->list[l->used] = '\0';
+    printf("%s aaaaa %zu %zu \n", l->list, l->used, l->size);
 }
 
 void appendStringCharList(CharList *l, char elements[], int arr_length) {
     if (l->used + arr_length >= l->size) {
-        l->size += arr_length;
-        l->list = realloc(l->list, l->size * sizeof(char *));
+        l->size += arr_length + 1;
+        l->list = realloc(l->list, l->size * sizeof(char *) + 1);
     }
     for (int i = 0; i < arr_length; i++) {
         l->list[l->used++] = elements[i];
+        l->list[l->used] = '\0';
     }
 }
 
 void initStringList(StringList *l) {
     size_t initialSize = 10;
-    l->list = malloc(initialSize * sizeof(char *));
+    l->list = malloc((initialSize + 1) * sizeof(char *));
     l->used = 0;
     l->size = initialSize;
 }
@@ -35,7 +38,7 @@ void initStringList(StringList *l) {
 void appendStringList(StringList *l, char element[]) {
     if (l->used == l->size) {
         l->size += 1;
-        l->list = realloc(l->list, l->size * sizeof(char *));
+        l->list = realloc(l->list, l->size * sizeof(char *) + 1);
     }
     l->list[l->used++] = element;
 }
@@ -82,7 +85,7 @@ void createError(Error *error, Position positionStart, Position positionEnd, cha
 
 char *reprAsStringError(Error error) {
     const int totalStructSize = sizeof(Error);
-    char *returnValue = (char *) malloc(totalStructSize * sizeof(char));
+    char *returnValue = (char *) malloc((totalStructSize+1) * sizeof(char));
     sprintf(returnValue, "%s: %s \n at file %s and line %d", error.errorName, error.details, error.positionStart.filename, error.positionStart.ln + 1);
     return returnValue;
 }
@@ -94,7 +97,7 @@ void createToken(Token *token, const char * type, char * value) {
 
 void initTokensList(TokensList *l) {
     size_t initialSize = 10;
-    l->list = (Token*)malloc(initialSize * sizeof(Token));
+    l->list = (Token*)malloc((initialSize + 1) * sizeof(Token));
     l->used = 0;
     l->size = initialSize;
 }
@@ -102,16 +105,22 @@ void initTokensList(TokensList *l) {
 void appendTokensList(TokensList *l, Token element) {
     if (l->used == l->size) {
         l->size += 1;
-        l->list = realloc(l->list, l->size * sizeof(Token));
+        l->list = realloc(l->list, l->size * sizeof(Token) + 1);
     }
     l->list[l->used++] = element;
+}
+
+void freeTokensList(TokensList *l) {
+    free(l->list);
+    l->list = NULL;
+    l->used = l->size = 0;
 }
 
 char * reprToken(Token token) {
     const int typeFieldSize = sizeof(token.type);
     const int valueFieldSize = sizeof(token.value);
     const int totalStructSize = typeFieldSize + valueFieldSize;
-    char * returnValue = (char*)malloc(totalStructSize * sizeof(char));
+    char * returnValue = (char*)malloc((totalStructSize+1) * sizeof(char));
     if (strlen(token.value) == 0) {
         sprintf(returnValue, "%s, %s", token.type, token.value);
         return returnValue;
@@ -174,6 +183,10 @@ Token makeNumberLexer(struct Lexer *lexer) {
         return numericToken;
     }
     createToken(&numericToken, TT_INT, numberString.list);
+
+    free(TT_DIGITS_WITH_DOT);
+    TT_DIGITS_WITH_DOT = NULL;
+
     return numericToken;
 }
 
@@ -199,7 +212,7 @@ Token makeIdentifierLexer(struct Lexer *lexer) {
     }
 
     char tokenType[20];
-    
+
     if (isKeyword(identifierString.list)) {
         strcpy(tokenType, TT_KEYWORD);
     } else {
@@ -207,6 +220,10 @@ Token makeIdentifierLexer(struct Lexer *lexer) {
     }
 
     createToken(&numericToken, tokenType, identifierString.list);
+
+    free(IDENTIFIER_CHARACTERS);
+    IDENTIFIER_CHARACTERS = NULL;
+
     return numericToken;
 }
 
@@ -230,6 +247,10 @@ tuple makeTokensLexer(struct Lexer * lexer) {
             advanceLexer(lexer);
         } else if (lexer->currentChar == '+') {
             createToken(&lToken, TT_PLUS, "+");
+            appendTokensList(&tokens, lToken);
+            advanceLexer(lexer);
+        } else if (lexer->currentChar == ',') {
+            createToken(&lToken, TT_COMA, ",");
             appendTokensList(&tokens, lToken);
             advanceLexer(lexer);
         } else if (lexer->currentChar == '-') {
@@ -270,27 +291,32 @@ tuple makeTokensLexer(struct Lexer * lexer) {
             createError(&lexError, positionStart, positionStart, stringError, "No details for this error");
             strcpy(lexTokensReturn.b.strval, reprAsStringError(lexError));
 
+            freeTokensList(&tokens);
+
             return lexTokensReturn;
         }
     }
     lexTokensReturn.a.tlval = tokens;
+    freeTokensList(&tokens);
     return lexTokensReturn;
 }
 
 tuple read_stdin () {
-    char *s = malloc(1);
+    char *userInput = (char *)malloc(1 * sizeof(char));
     int c;
-    int i = 0;
+    int length = 0;
     while((c = getchar()) != '\n' && c != EOF)
     {
-        s[i++] = c;
-        s = realloc(s, i+1);
+        userInput = realloc(userInput, length+1);
+        userInput[length++] = c;
     }
-    s[i] = '\0';
+    userInput[length] = '\0';
 
     tuple returnValue;
-    strcpy(returnValue.a.strval, s);
-    returnValue.b.ival = i;
+    strcpy(returnValue.a.strval, userInput);
+    returnValue.b.ival = length;
+
+    free(userInput);
 
     return returnValue;
 }
