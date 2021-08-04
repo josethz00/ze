@@ -14,7 +14,7 @@ void appendCharList(CharList *l, char element) {
     }
     l->list[l->used++] = element;
     l->list[l->used] = '\0';
-    printf("%s aaaaa %zu %zu \n", l->list, l->used, l->size);
+    printf("list: %s used: %zu size: %zu \n", l->list, l->used, l->size);
 }
 
 void appendStringCharList(CharList *l, char elements[], int arr_length) {
@@ -290,14 +290,14 @@ tuple makeTokensLexer(struct Lexer * lexer) {
             sprintf(stringError, "%s %c", errorMsg, lexer->currentChar);
             createError(&lexError, positionStart, positionStart, stringError, "No details for this error");
             strcpy(lexTokensReturn.b.strval, reprAsStringError(lexError));
-
-            freeTokensList(&tokens);
+            
+            free(stringError);
 
             return lexTokensReturn;
         }
     }
     lexTokensReturn.a.tlval = tokens;
-    freeTokensList(&tokens);
+
     return lexTokensReturn;
 }
 

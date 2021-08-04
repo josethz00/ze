@@ -68,6 +68,7 @@ void initTokensList(TokensList *l);
 void appendTokensList(TokensList *l, Token element);
 char * reprToken(Token token);
 void printTokensList(TokensList *l, size_t tokensListLen);
+void freeTokensList(TokensList *l);
 
 struct Lexer {
     CharList text;
