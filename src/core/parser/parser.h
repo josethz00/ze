@@ -19,17 +19,17 @@ typedef struct {
     Token operatorToken;
     struct GenericNode * rightNode;
     int isInitialized;
-} BinaryNode;
+} BinaryOpertionNode;
 
 struct GenericNode 
 {
     NumberNode numericNode;
-    BinaryNode * binaryNode;
+    BinaryOpertionNode * binaryOpertionNode;
 };
 
-void createBinaryNode(BinaryNode * node, struct GenericNode * leftNode, Token operatorToken, struct GenericNode * rightNode);
+void createBinaryOpertionNode(BinaryOpertionNode * node, struct GenericNode * leftNode, Token operatorToken, struct GenericNode * rightNode);
 
-char * reprBinaryNode(BinaryNode node);
+char * reprBinaryOpertionNode(BinaryOpertionNode node);
 
 struct Parser {
     TokensList list;
@@ -45,6 +45,6 @@ struct GenericNode factorParser(struct Parser * parser);
 
 struct GenericNode termParser(struct Parser * parser);
 
-BinaryNode exprParser(struct Parser * parser);
+BinaryOpertionNode exprParser(struct Parser * parser);
 
 #endif

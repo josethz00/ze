@@ -9,22 +9,22 @@ char * reprNumberNode(NumberNode node) {
     return reprToken(node.token);
 }
 
-void createBinaryNode(BinaryNode * node, struct GenericNode * leftNode, Token operatorToken, struct GenericNode * rightNode) {
+void createBinaryOpertionNode(BinaryOpertionNode * node, struct GenericNode * leftNode, Token operatorToken, struct GenericNode * rightNode) {
     node->leftNode = leftNode;
     node->operatorToken = operatorToken;
     node->rightNode = rightNode;
     node->isInitialized = -1;
 }
 
-char * reprBinaryNode(BinaryNode node) {
+char * reprBinaryOpertionNode(BinaryOpertionNode node) {
     char * returnValue = (char*)malloc(sizeof(node.rightNode) 
             + sizeof(node.operatorToken) 
             + sizeof(node.leftNode));
     sprintf(
             returnValue, "%s %s %s", 
-            reprToken(node.leftNode.numericNode.token), 
+            reprToken(node.leftNode->numericNode.token), 
             reprToken(node.operatorToken), 
-            reprToken(node.rightNode.numericNode.token)
+            reprToken(node.rightNode->numericNode.token)
     );
     return returnValue;
 }
@@ -62,23 +62,23 @@ struct GenericNode termParser(struct Parser * parser) {
             advanceParser(parser);
             struct GenericNode right = factorParser(parser);
             if (right.numericNode.isInitialized) {
-                createBinaryNode(&term, left, operatorToken, right);
+                createBinaryOpertionNode(&term, &left, operatorToken, &right);
             }
         }
     }
     return term;
 }
 
-BinaryNode exprParser(struct Parser * parser) {
+BinaryOpertionNode exprParser(struct Parser * parser) {
     struct GenericNode left = termParser(parser);
-    BinaryNode term;
-    if (left.binaryNode.isInitialized || left.numericNode.isInitialized) {
+    BinaryOpertionNode term;
+    if (left.binaryOpertionNode->isInitialized || left.numericNode.isInitialized) {
         while (parser->currentToken.type == TT_PLUS || parser->currentToken.type == TT_MINUS) {
             Token operatorToken = parser->currentToken;
             advanceParser(parser);
             struct GenericNode right = factorParser(parser);
-            if (right.binaryNode.isInitialized || right.numericNode.isInitialized) {
-                createBinaryNode(&term, left, operatorToken, right);
+            if (right.binaryOpertionNode->isInitialized || right.numericNode.isInitialized) {
+                createBinaryOpertionNode(&term, &left, operatorToken, &right);
             }
         }
     }
