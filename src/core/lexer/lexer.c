@@ -297,7 +297,6 @@ tuple makeTokensLexer(struct Lexer * lexer) {
         }
     }
     lexTokensReturn.a.tlval = tokens;
-
     return lexTokensReturn;
 }
 

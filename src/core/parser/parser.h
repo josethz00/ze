@@ -3,33 +3,12 @@
 
 #include "../lexer/lexer.h"
 
-typedef struct {
-    Token token;
-    int isInitialized;
-} NumberNode;
-
 void createNumberNode(NumberNode * node, Token token);
 
 char * reprNumberNode(NumberNode node);
+void createBinaryOperationNode(BinaryOperationNode * node, struct GenericNode * leftNode, Token operatorToken, struct GenericNode * rightNode);
 
-struct GenericNode;
-
-typedef struct {
-    struct GenericNode * leftNode;
-    Token operatorToken;
-    struct GenericNode * rightNode;
-    int isInitialized;
-} BinaryOpertionNode;
-
-struct GenericNode 
-{
-    NumberNode numericNode;
-    BinaryOpertionNode * binaryOpertionNode;
-};
-
-void createBinaryOpertionNode(BinaryOpertionNode * node, struct GenericNode * leftNode, Token operatorToken, struct GenericNode * rightNode);
-
-char * reprBinaryOpertionNode(BinaryOpertionNode node);
+char * reprBinaryOperationNode(BinaryOperationNode node);
 
 struct Parser {
     TokensList list;
@@ -45,6 +24,7 @@ struct GenericNode factorParser(struct Parser * parser);
 
 struct GenericNode termParser(struct Parser * parser);
 
-BinaryOpertionNode exprParser(struct Parser * parser);
+BinaryOperationNode exprParser(struct Parser * parser);
+BinaryOperationNode runParser(struct Parser * parser);
 
 #endif

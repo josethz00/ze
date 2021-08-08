@@ -80,6 +80,25 @@ struct Lexer {
 void advanceLexer(struct Lexer * lexer);
 void createLexer(struct Lexer * lexer, char text[], int arrLength, char filename[]);
 
+typedef struct {
+    Token token;
+    int isInitialized;
+} NumberNode;
+
+struct GenericNode;
+
+typedef struct {
+    struct GenericNode * leftNode;
+    Token operatorToken;
+    struct GenericNode * rightNode;
+    int isInitialized;
+} BinaryOperationNode;
+
+struct GenericNode 
+{
+    NumberNode numericNode;
+    BinaryOperationNode * binaryOperationNode;
+};
 typedef struct 
 {
   union {
@@ -88,7 +107,7 @@ typedef struct
     char cval;
     char strval[200];
     TokensList tlval;
-
+    BinaryOperationNode ast;
   } a;
   union {
     int ival;
@@ -96,6 +115,7 @@ typedef struct
     char cval;
     char strval[200];
     TokensList tlval;
+    BinaryOperationNode ast;
   } b;
 } tuple;
 
