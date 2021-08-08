@@ -1,25 +1,25 @@
 #include "./parser.h"
 
-void createNumberNode(NumberNode * node, Token token) {
-   node->token = token;
-   node->isInitialized = 1;
+void createNumberNode(NumberNode *node, Token token) {
+    node->token = token;
+    node->isInitialized = 1;
 }
-
 char * reprNumberNode(NumberNode node) {
     return reprToken(node.token);
 }
-
-void createBinaryOpertionNode(BinaryOpertionNode * node, struct GenericNode * leftNode, Token operatorToken, struct GenericNode * rightNode) {
+void createBinaryOperationNode(BinaryOperationNode * node, BinaryOperationNode * leftNode, Token operatorToken, BinaryOperationNode * rightNode) {
+    node = (BinaryOperationNode*)malloc(sizeof(&rightNode) 
+            + sizeof(&operatorToken) 
+            + sizeof(&leftNode));
     node->leftNode = leftNode;
     node->operatorToken = operatorToken;
     node->rightNode = rightNode;
-    node->isInitialized = -1;
+    node->isInitialized = 1;
 }
-
-char * reprBinaryOpertionNode(BinaryOpertionNode node) {
+char * reprBinaryOperationNode(BinaryOperationNode node) {
     char * returnValue = (char*)malloc(sizeof(node.rightNode) 
             + sizeof(node.operatorToken) 
-            + sizeof(node.leftNode));
+            + sizeof(node.leftNode) + 1);
     sprintf(
             returnValue, "%s %s %s", 
             reprToken(node.leftNode->numericNode.token), 
@@ -38,49 +38,8 @@ Token advanceParser(struct Parser * parser) {
 }
 
 void createParser(struct Parser * parser, TokensList tokens) {
+    initTokensList(&parser->list);
     parser->list = tokens;
     parser->tokenIndex = 1;
     advanceParser(parser);
-}
-
-struct GenericNode factorParser(struct Parser * parser) {
-    struct GenericNode newNumNode;
-    if (parser->currentToken.type == TT_INT || parser->currentToken.type == TT_FLOAT) {
-        advanceParser(parser); 
-        createNumberNode(&newNumNode, parser->currentToken);
-        return newNumNode;
-    }
-    return newNumNode;
-}
-
-struct GenericNode termParser(struct Parser * parser) {
-    struct GenericNode left = factorParser(parser);
-    struct GenericNode term;
-    if (left.numericNode.isInitialized) {
-        while (parser->currentToken.type == TT_MUL || parser->currentToken.type == TT_DIV) {
-            Token operatorToken = parser->currentToken;
-            advanceParser(parser);
-            struct GenericNode right = factorParser(parser);
-            if (right.numericNode.isInitialized) {
-                createBinaryOpertionNode(&term, &left, operatorToken, &right);
-            }
-        }
-    }
-    return term;
-}
-
-BinaryOpertionNode exprParser(struct Parser * parser) {
-    struct GenericNode left = termParser(parser);
-    BinaryOpertionNode term;
-    if (left.binaryOpertionNode->isInitialized || left.numericNode.isInitialized) {
-        while (parser->currentToken.type == TT_PLUS || parser->currentToken.type == TT_MINUS) {
-            Token operatorToken = parser->currentToken;
-            advanceParser(parser);
-            struct GenericNode right = factorParser(parser);
-            if (right.binaryOpertionNode->isInitialized || right.numericNode.isInitialized) {
-                createBinaryOpertionNode(&term, &left, operatorToken, &right);
-            }
-        }
-    }
-    return term;
 }

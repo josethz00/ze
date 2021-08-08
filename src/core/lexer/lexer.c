@@ -14,7 +14,6 @@ void appendCharList(CharList *l, char element) {
     }
     l->list[l->used++] = element;
     l->list[l->used] = '\0';
-    printf("list: %s used: %zu size: %zu \n", l->list, l->used, l->size);
 }
 
 void appendStringCharList(CharList *l, char elements[], int arr_length) {

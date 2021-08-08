@@ -9,42 +9,28 @@ typedef struct {
 } NumberNode;
 
 void createNumberNode(NumberNode * node, Token token);
-
 char * reprNumberNode(NumberNode node);
 
-struct GenericNode;
+typedef struct BIN_OP_NODE BinaryOperationNode;
 
-typedef struct {
-    struct GenericNode * leftNode;
+typedef struct BIN_OP_NODE {
+    BinaryOperationNode * leftNode;
     Token operatorToken;
-    struct GenericNode * rightNode;
-    int isInitialized;
-} BinaryOpertionNode;
-
-struct GenericNode 
-{
+    BinaryOperationNode * rightNode;
     NumberNode numericNode;
-    BinaryOpertionNode * binaryOpertionNode;
-};
+    int isInitialized;
+} BinaryOperationNode;
 
-void createBinaryOpertionNode(BinaryOpertionNode * node, struct GenericNode * leftNode, Token operatorToken, struct GenericNode * rightNode);
-
-char * reprBinaryOpertionNode(BinaryOpertionNode node);
+void createBinaryOperationNode(BinaryOperationNode * node, BinaryOperationNode * leftNode, Token operatorToken, BinaryOperationNode * rightNode);
+char * reprBinaryOperationNode(BinaryOperationNode node);
 
 struct Parser {
     TokensList list;
     int tokenIndex;
     Token currentToken;
-};  
+};
 
 Token advanceParser(struct Parser * parser);
-
 void createParser(struct Parser * parser, TokensList tokens);
-
-struct GenericNode factorParser(struct Parser * parser);
-
-struct GenericNode termParser(struct Parser * parser);
-
-BinaryOpertionNode exprParser(struct Parser * parser);
 
 #endif
