@@ -1,0 +1,4 @@
+main(argv: string[]): void {
+  my_var: string = "Hello World!"
+  print(my_var)
+}
