@@ -1,0 +1,6 @@
+main(argv: string[]): void {
+  num_var: number = 1
+  num_var2: number = 2.6
+
+  print(num_var + num_var2)
+}
