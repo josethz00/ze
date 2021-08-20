@@ -1,8 +1,17 @@
+exec = ze.out
+sources = $(wildcard src/**/*.c) $(wildcard src/**/**/*.c) $(wildcard src/*.c)
+objects = $(sources:.c=.o)
+flags = -g -Wall -lm -ldl -fPIC -rdynamic
+
 run: quapa 
-		./ze.out
+		./$(exec)
 
 quapa:
-	gcc -Wall src/constants/tokens-constants.c src/constants/lexer-constants.c src/constants/keywords-constants.c src/core/lexer/lexer.c src/core/parser/parser.c scripts/run/run.c scripts/shell/shell.c main.c -o ze.out
+	gcc $(flags) $(sources) -o $(exec)
 
-clean: 
-	rm -rf *.out
+clean:
+	-rm *.out
+	-rm *.o
+	-rm *.a
+	-rm src/*.o
+	-rm src/**/*.o

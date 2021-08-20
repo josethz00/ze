@@ -1,4 +1,4 @@
-#include "./scripts/shell/shell.h"
+#include "./scripts/shell.h"
 
 int main(void) {
   shell();
