@@ -1,0 +1,13 @@
+callback(text: string): string {
+  return text
+}
+
+hello_world(callback: (text: string) => string): string {
+  my_var = "Hello world"
+  return callback(my_var)
+} 
+
+main(argv: string[]): void {
+  pow_result = pow(2, 3)
+  print(pow_result)
+}

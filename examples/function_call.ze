@@ -1,0 +1,8 @@
+pow(a: number, b: number): number {
+  return a ** b
+} 
+
+main(argv: string[]): void {
+  pow_result = pow(2, 3)
+  print(pow_result)
+}
