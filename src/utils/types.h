@@ -80,26 +80,6 @@ char * reprToken(Token token);
 void printTokensList(TokensList *l, size_t tokensListLen);
 void freeTokensList(TokensList *l);
 
-// tuple type *****************************************************************
-
-typedef struct 
-{
-  union {
-    int ival;
-    float fval;
-    char cval;
-    char strval[200];
-    TokensList tlval;
-  } a;
-  union {
-    int ival;
-    float fval;
-    char cval;
-    char strval[200];
-    TokensList tlval;
-  } b;
-} tuple;
-
 // AST type *******************************************************************
 
 typedef struct AST_STRUCT {
@@ -113,6 +93,8 @@ typedef struct AST_STRUCT {
     AST_STATEMENT_RETURN,
     AST_INT,
     AST_FLOAT,
+    AST_BIN_OP_NODE,
+    AST_NULL,
   } type;
   struct AST_STRUCT * value;
   struct AST_STRUCT * left;
@@ -122,5 +104,27 @@ typedef struct AST_STRUCT {
 } AST;
 
 AST createAST(int type);
+
+// tuple type *****************************************************************
+
+typedef struct 
+{
+  union {
+    int ival;
+    float fval;
+    char cval;
+    char strval[200];
+    TokensList tlval;
+    AST * ast;
+  } a;
+  union {
+    int ival;
+    float fval;
+    char cval;
+    char strval[200];
+    TokensList tlval;
+    AST * ast;
+  } b;
+} tuple;
 
 #endif

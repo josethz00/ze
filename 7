@@ -12,20 +12,20 @@ void createParser(struct Parser * parser, TokensList tokens) {
   initTokensList(&parser->list);
   parser->list = tokens;
   parser->tokenIndex = -1;
+  *parser->currentToken = (Token*)malloc(1 * sizeof(Token));
   advanceParser(parser);
 }
 
 AST factorParser(struct Parser * parser) {
   AST astFactor = createAST(AST_NULL);
-  Token token = parser->currentToken;
   if (
     !strcmp(parser->currentToken.type, TT_INT) || 
     !strcmp(parser->currentToken.type, TT_FLOAT)
   ) {
-    printf("\n value -> %s \n", token.value);
+    printf("\n value -> %s \n", parser->currentToken.value);
+    astFactor.type = !strcmp(parser->currentToken.type, TT_INT) ? AST_INT : AST_FLOAT;
+    astFactor.numericValue = parser->currentToken.value;
     advanceParser(parser);
-    astFactor.type = !strcmp(token.type, TT_INT) ? AST_INT : AST_FLOAT;
-    astFactor.numericValue = token.value;
   }
   return astFactor;
 }
@@ -34,18 +34,19 @@ AST termParser(struct Parser * parser) {
   AST left = createAST(AST_NULL);
   left = factorParser(parser);
 
-  Token token = parser->currentToken;
+  printf("\n %s cuuuuuuuuuuuu \n", parser->currentToken.value);
 
   while(
     !strcmp(parser->currentToken.type, TT_MUL) ||
     !strcmp(parser->currentToken.type, TT_DIV)
   ) {
-    advanceParser(parser);
     AST right = createAST(AST_NULL); 
     right = factorParser(parser);
+    printf("\n value -> %s \n", right.numericValue);
     left.left = &left;
-    left.operatorValue = token.value;
+    left.operatorValue = parser->currentToken.value;
     left.right = &right;
+    advanceParser(parser);
   }
   return left;
 }
@@ -54,18 +55,16 @@ AST exprParser(struct Parser * parser) {
   AST left = createAST(AST_NULL); 
   left = termParser(parser);
 
-  Token token = parser->currentToken;
-
   while(
     !strcmp(parser->currentToken.type, TT_PLUS) ||
     !strcmp(parser->currentToken.type, TT_MINUS)
   ) {
-    advanceParser(parser);
     AST right = createAST(AST_NULL); 
     right = termParser(parser);
     left.left = &left;
-    left.operatorValue = token.value;
+    left.operatorValue = parser->currentToken.value;
     left.right = &right;
+    advanceParser(parser);
   }
 
   return left;

@@ -1,7 +1,7 @@
 #include "./run.h"
 #include "../core/parser.h"
 
-tuple run(char * text, int textLength, char filename[]) {
+void run(char * text, int textLength, char filename[]) {
     struct Lexer lexer;
     createLexer(&lexer, text, textLength, filename);
     tuple lexerGeneratedTokensResult = makeTokensLexer(&lexer);
@@ -11,12 +11,15 @@ tuple run(char * text, int textLength, char filename[]) {
         exit(0);
     }
 
+    printTokensList(&lexerGeneratedTokensResult.a.tlval, lexerGeneratedTokensResult.a.tlval.used);
+
     // Generate AST (Abstract Syntax Tree)
-    /*struct Parser parser;
+    struct Parser parser;
     createParser(&parser, lexerGeneratedTokensResult.a.tlval);
-    BinaryOperationNode ast = runParser(&parser);
+    // freeTokensList(&lexerGeneratedTokensResult.a.tlval);
 
-    lexerGeneratedTokensResult.a.ast = ast;*/
+    AST ast = createAST(AST_NULL);
+    ast = runParser(&parser);
 
-    return lexerGeneratedTokensResult;
+    // lexerGeneratedTokensResult.a.ast = &ast;
 }
